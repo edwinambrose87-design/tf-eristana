@@ -1,0 +1,18 @@
+{
+  "id": "/index.html",
+  "name": "TF Eristana",
+  "short_name": "Eristana",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#D7282F",
+  "theme_color": "#D7282F",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
