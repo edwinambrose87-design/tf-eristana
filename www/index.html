@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>TF Eristana Residents</title>
+    <link rel="manifest" href="manifest.json?v=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    /* Our custom "Paint Shop" */
+    :root {
+        --tf-red: #D7282F; /* A close match to your logo's Red */
+        --tf-black: #000000;
+    }
+
+    body {
+    background-color: #f8f9fa; /* A very light grey/white like the screenshot */
+    }
+
+    .bg-tf-red {
+        background-color: var(--tf-red);
+    }
+
+    .text-tf-red {
+        color: var(--tf-red);
+    }
+
+    .text-tf-black {
+        color: var(--tf-black);
+    }
+
+    #main-grid {
+        position: relative;
+        z-index: 10;
+    }
+
+    .container {
+        position: relative; /* This unlocks the 'Layering' power */
+        z-index: 5;         /* This puts the tiles on Layer 5 */
+    }
+
+    nav, .bg-tf-red {
+        position: relative;
+        z-index: 1;         /* This keeps the red header on Layer 1 */
+    }
+
+    .tile-disabled {
+    opacity: 1;          /* Makes it look faded */
+    filter: grayscale(1);  /* Removes all color */
+    pointer-events: none;  /* Makes it so you can't click it */
+    background-color: #f0f0f0 !important; /* Makes the box a duller grey */
+    }
+
+</style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-tf-red px-3 shadow-sm">
+        <span class="navbar-brand mb-0 h1" style="font-size: 0.9rem; letter-spacing: 1px;">TF ERISTANA</span>
+        <span class="text-white fw-bold" style="font-size: 0.8rem; cursor: pointer; opacity: 0.9;">LOGOUT</span>
+    </nav>
+
+    <div class="bg-tf-red text-white p-4 pb-5 text-center mb-5 shadow" 
+     style="border-bottom-left-radius: 50px; border-bottom-right-radius: 50px; margin-top: -1px; min-height: 180px;">
+        
+        <p class="mb-1 text-uppercase fw-light" style="font-size: 0.75rem; letter-spacing: 2px; opacity: 0.9;">
+            Welcome back, Guard
+        </p>
+        <h1 class="fw-bold mb-0" style="font-size: 2.2rem; letter-spacing: -1px;">
+            SHIFT ACTIVE
+        </h1>
+    </div>
+
+    <div class="container pb-5" style="margin-top: -140px; margin-bottom: 80px;">
+        <div class="row g-4 px-2" id="main-grid">
+            <div class="col-6">
+                <div class="card border-0 shadow-sm text-center p-3 tile-disabled" style="border-radius: 25px;">
+                    <div class="mb-2">
+                        <span style="font-size: 2rem;">✅</span>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.7rem;">CLOCK OUT</h6>
+                    <p class="text-danger fw-bold mb-0" style="font-size: 0.9rem;">12:48:51</p>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 25px;">
+                    <div class="mb-2">
+                        <span style="font-size: 2rem;">🏠</span>
+                    </div>
+                    <h6 class="fw-bold mb-1" style="font-size: 0.7rem;">RESIDENTS</h6>
+                    <p class="text-muted mb-0" style="font-size: 0.7rem;">CONTACT LIST</p>
+                </div>
+            </div>
+
+           <div class="col-6">
+            <div class="card border-0 shadow-sm text-center p-3 tile-disabled" style="border-radius: 25px;">
+                <div class="mb-2">
+                    <span style="font-size: 2rem;">👤</span>
+                </div>
+                <h6 class="fw-bold mb-1" style="font-size: 0.7rem;">VISITORS</h6>
+                <p class="text-muted mb-0" style="font-size: 0.7rem;">IN / OUT</p>
+                </div>
+            </div>
+
+        <div class="col-6">
+            <div class="card border-0 shadow-sm text-center p-3 tile-disabled" style="border-radius: 25px;">
+                <div class="mb-2">
+                    <span style="font-size: 2rem;">👷</span>
+                </div>
+                <h6 class="fw-bold mb-1" style="font-size: 0.7rem;">CONTRACTORS</h6>
+                <p class="text-muted mb-0" style="font-size: 0.7rem;">IN / OUT</p>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card border-0 shadow-sm text-center p-3 tile-disabled" style="border-radius: 25px;">
+                <div class="mb-2">
+                    <span style="font-size: 2rem;">🚨</span>
+                </div>
+                <h6 class="fw-bold mb-1" style="font-size: 0.7rem;">EMERGENCY</h6>
+                <p class="text-muted mb-0" style="font-size: 0.7rem;">999 / POLICE</p>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="card border-0 shadow-sm text-center p-3 tile-disabled" style="border-radius: 25px;">
+                <div class="mb-2">
+                    <span style="font-size: 2rem;">⚠️</span>
+                </div>
+                <h6 class="fw-bold mb-1" style="font-size: 0.7rem;">INCIDENT</h6>
+                <p class="text-muted mb-0" style="font-size: 0.7rem;">REPORT TASK</p>
+            </div>
+        </div> 
+    
+    </div>
+
+    <div class="fixed-bottom text-center bg-light py-3">
+        <small class="text-muted text-uppercase" style="letter-spacing: 1px; font-size: 0.6rem;">
+            Eristana A & B • Management System
+        </small>
+    </div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js?v=3');
+  }
+</script>
+</body>
+</html>
