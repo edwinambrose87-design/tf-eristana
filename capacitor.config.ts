@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'TF Eristana',
   webDir: 'www',
   server: {
-    url: 'https://tf-eristana.vercel.app', // REPLACE THIS with your actual Vercel link!
+    url: 'https://tf-eristana-qef1.vercel.app', // Your new link
     cleartext: true
   }
 };
