@@ -3,76 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resident Contact List</title>
+    <title>Resident List - TF Eristana</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="supabase.js"></script>
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        .header-red { background-color: #d62828; color: white; padding: 20px; border-radius: 0 0 30px 30px; margin-bottom: 30px; }
-        .block-tile { border-radius: 15px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
-        .block-tile.active { border-color: #d62828; background-color: #fff1f1; }
-        .unit-tile { background: white; border-radius: 12px; padding: 15px; text-align: center; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; }
-        .unit-tile:active { background-color: #eee; }
-        .back-btn { color: white; text-decoration: none; font-size: 0.9rem; }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; padding-bottom: 100px; }
+        .header-section { background-color: #d62828; color: white; padding: 50px 20px 100px 20px; text-align: center; }
+        .overlap-container { margin-top: -60px; position: relative; z-index: 10; }
+        .block-card { background: #e9ecef; border-radius: 25px; padding: 25px 15px; text-align: center; cursor: pointer; color: #adb5bd; border: none; transition: 0.3s; }
+        .block-card.active { background: white; color: black; box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .block-card i { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+        .building-tile { background: white; border-radius: 20px; padding: 22px 5px; text-align: center; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; cursor: pointer; border: 1px solid #eee; color: #212529; }
+        .floor-label { background: #212529; color: white; border-radius: 10px; padding: 6px 15px; display: inline-block; font-size: 0.75rem; margin: 20px 0 10px 0; font-weight: bold; width: 100%; text-align: center; }
+        .unit-pill { background: #fff; border: 1px solid #dee2e6; border-radius: 18px; padding: 18px 5px; text-align: center; font-weight: bold; font-size: 0.85rem; cursor: pointer; color: #212529; }
+        .divider-container { display: flex; align-items: center; text-align: center; margin: 30px 0; font-weight: bold; }
+        .divider-container::before, .divider-container::after { content: ''; flex: 1; border-bottom: 2px solid #212529; }
+        .divider-text { margin: 0 15px; letter-spacing: 2px; text-transform: uppercase; font-size: 0.85rem; color: #212529; }
+        
+        .profile-card { background: white; border-radius: 35px; padding: 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .profile-icon { background: #f8f9fa; width: 90px; height: 90px; line-height: 90px; border-radius: 50%; margin: 0 auto 20px; font-size: 2.5rem; color: #d62828; }
+        .btn-call { background-color: #28a745; color: white; border-radius: 50px; padding: 18px; font-size: 1.1rem; font-weight: bold; width: 100%; margin-top: 15px; text-decoration: none; display: inline-block; }
+        .btn-whatsapp { background-color: #25D366; color: white; border-radius: 50px; padding: 18px; font-size: 1.1rem; font-weight: bold; width: 100%; margin-top: 15px; text-decoration: none; display: inline-block; }
+        .back-pill { background: #343a40; color: white; border-radius: 50px; padding: 12px 30px; display: inline-block; text-decoration: none; font-weight: bold; font-size: 0.8rem; margin-top: 25px; cursor: pointer; }
+
+        .loading-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; width: 100%; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="header-red text-center">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <a href="index.html" class="back-btn"><i class="fas fa-chevron-left"></i> BACK</a>
-            <span style="font-size: 0.8rem; opacity: 0.8;">ERISTANA MANAGEMENT</span>
-        </div>
-        <h2 class="fw-bold">RESIDENT LIST</h2>
+    <div class="header-section">
+        <div style="font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 10px; opacity: 0.9;">TF ERISTANA</div>
+        <h1 style="font-weight: 800; margin: 0;" id="page-title">RESIDENT LIST</h1>
     </div>
 
-    <div class="container">
-        <div class="row g-3 mb-4">
-            <div class="col-6">
-                <div id="btnA" class="card block-tile active p-3 text-center shadow-sm" onclick="selectBlock('A')">
-                    <h5 class="mb-0 fw-bold">BLOCK A</h5>
+    <div class="container overlap-container">
+        <div id="block-selector">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div id="btnA" class="block-card active" onclick="loadBuildingGrid('A')">
+                        <i class="fas fa-building"></i><div class="fw-bold">BLOCK A</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div id="btnB" class="block-card" onclick="loadBuildingGrid('B')">
+                        <i class="fas fa-city"></i><div class="fw-bold">BLOCK B</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-6">
-                <div id="btnB" class="card block-tile p-3 text-center shadow-sm" onclick="selectBlock('B')">
-                    <h5 class="mb-0 fw-bold">BLOCK B</h5>
-                </div>
+            <div class="divider-container">
+                <span class="divider-text" id="divider-label">BLOCK A</span>
             </div>
         </div>
 
-        <div class="row g-3" id="unit-grid">
-            </div>
+        <div id="dynamic-content" class="row g-2"></div>
+
+        <div class="text-center mt-5">
+            <a href="index.html" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm">EXIT TO DASHBOARD</a>
+        </div>
     </div>
 
     <script>
-        function selectBlock(blockLetter) {
-            // Update UI highlight
-            document.getElementById('btnA').classList.remove('active');
-            document.getElementById('btnB').classList.remove('active');
-            document.getElementById('btn' + blockLetter).classList.add('active');
+        const _URL = 'https://zfkcyhkpdijxepjkvowl.supabase.co'; 
+        const _KEY = 'sb_publishable__w0R47jJvdnSJiE47E8KEQ_Z6nydqpd';
+        let supabaseClient;
+        let currentBlock = 'A';
 
-            // Generate the 9 tiles
-            const grid = document.getElementById('unit-grid');
-            grid.innerHTML = ""; // Clear current tiles
-
-            for (let i = 1; i <= 9; i++) {
-                grid.innerHTML += `
-                    <div class="col-4">
-                        <div class="unit-tile shadow-sm" onclick="openContact('${blockLetter}${i}')">
-                            ${blockLetter}${i}
-                        </div>
-                    </div>
-                `;
+        function getDB() {
+            if (!supabaseClient && window.supabase) {
+                supabaseClient = window.supabase.createClient(_URL, _KEY);
             }
+            return supabaseClient;
         }
 
-        function openContact(unitName) {
-            alert("Opening resident details for Unit: " + unitName);
-            // Later we can make this open a phone number list
+        function loadBuildingGrid(block) {
+            currentBlock = block;
+            document.getElementById('block-selector').style.display = 'block';
+            document.getElementById('page-title').innerText = "RESIDENT LIST";
+            document.getElementById('btnA').className = (block === 'A') ? 'block-card active' : 'block-card';
+            document.getElementById('btnB').className = (block === 'B') ? 'block-card active' : 'block-card';
+            document.getElementById('divider-label').innerText = 'BLOCK ' + block;
+
+            let count = (block === 'A') ? 11 : 10;
+            let html = '';
+            for (let i = 1; i <= count; i++) {
+                html += `<div class="col-4"><div class="building-tile" onclick="loadUnitList('${block}${i}')">${block}${i}</div></div>`;
+            }
+            document.getElementById('dynamic-content').innerHTML = html;
         }
 
-        // Initialize with Block A on load
-        window.onload = () => selectBlock('A');
+        function loadUnitList(bid) {
+            document.getElementById('block-selector').style.display = 'block'; 
+            document.getElementById('divider-label').innerText = "UNITS IN " + bid;
+            document.getElementById('page-title').innerText = "RESIDENT LIST";
+
+            let html = '';
+            const floors = ['G', '1', '2'];
+            floors.forEach(f => {
+                html += `<div class="col-12"><div class="floor-label">${f === 'G' ? 'GROUND FLOOR' : 'FLOOR ' + f}</div></div>`;
+                for (let u = 1; u <= 4; u++) {
+                    let unitFull = `${bid}-${f}-0${u}`;
+                    html += `<div class="col-6 mb-1"><div class="unit-pill" onclick="loadContactProfile('${unitFull}', '${bid}')">${unitFull}</div></div>`;
+                }
+            });
+
+            html += `<div class="col-12 text-center mt-3"><div class="back-pill" onclick="loadBuildingGrid('${currentBlock}')">BACK TO BUILDINGS</div></div>`;
+            document.getElementById('dynamic-content').innerHTML = html;
+        }
+
+        async function loadContactProfile(unitNumber, bid) {
+            document.getElementById('block-selector').style.display = 'none';
+            document.getElementById('page-title').innerText = "CONTACT INFO";
+
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="col-12 loading-wrapper">
+                    <div class="spinner-border text-danger" role="status"></div>
+                    <div class="mt-3 fw-bold">Connecting to Supabase...</div>
+                </div>`;
+            
+            const db = getDB();
+            const { data, error } = await db.from('Residents').select('*').eq('unit_number', unitNumber).single();
+
+            if (error || !data) {
+                document.getElementById('dynamic-content').innerHTML = `
+                    <div class="col-12 text-center">
+                        <div class="profile-card">
+                            <i class="fas fa-exclamation-circle fa-3x text-warning mb-3"></i>
+                            <h4>No Data Found</h4>
+                            <p class="text-muted">Unit ${unitNumber} is not yet registered.</p>
+                            <div class="back-pill" onclick="loadUnitList('${bid}')">BACK</div>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            // --- WHATSAPP NUMBER FIX ---
+            let rawPhone = data.phone_number.toString().replace(/\D/g, ''); // Remove anything that isn't a number
+            if (rawPhone.startsWith('0')) {
+                rawPhone = '6' + rawPhone; // Change 016... to 6016...
+            }
+            // ---------------------------
+
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="col-12">
+                    <div class="profile-card">
+                        <div class="profile-icon"><i class="fas fa-user-circle"></i></div>
+                        <h4 class="fw-bold mb-1">${data.owner_name}</h4>
+                        <span class="badge bg-dark mb-3 rounded-pill px-3">${(data.Title || 'Resident').toUpperCase()}</span>
+                        <p class="text-muted small">Unit Number</p>
+                        <h5 class="fw-bold">${unitNumber}</h5>
+                        <hr class="my-4" style="opacity: 0.1;">
+                        <p class="small text-uppercase mb-0" style="color: #999; letter-spacing: 1px;">Phone Number</p>
+                        <h3 class="fw-bold" style="color: #d62828;">${data.phone_number}</h3>
+                        <a href="tel:${data.phone_number}" class="btn-call"><i class="fas fa-phone-alt me-2"></i> CALL NOW</a>
+                        
+                        <a href="https://wa.me/${rawPhone}?text=Hi%20${data.owner_name},%20ini%20adalah%20Eristana%20Security." class="btn-whatsapp">
+                            <i class="fab fa-whatsapp me-2"></i> WHATSAPP TEXT
+                        </a>
+
+                        <div class="back-pill mt-4" onclick="loadUnitList('${bid}')">BACK TO UNITS</div>
+                    </div>
+                </div>`;
+        }
+
+        window.onload = () => loadBuildingGrid('A');
     </script>
 </body>
 </html>
