@@ -13,39 +13,32 @@
         .overlap-container { margin-top: -60px; position: relative; z-index: 10; }
         .block-card { background: #e9ecef; border-radius: 25px; padding: 25px 15px; text-align: center; cursor: pointer; color: #adb5bd; border: none; transition: 0.3s; }
         .block-card.active { background: white; color: black; box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .block-card i { font-size: 2.2rem; margin-bottom: 8px; display: block; }
         .building-tile { background: white; border-radius: 20px; padding: 22px 5px; text-align: center; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; cursor: pointer; border: 1px solid #eee; color: #212529; }
-        .floor-label { background: #212529; color: white; border-radius: 10px; padding: 6px 15px; display: inline-block; font-size: 0.75rem; margin: 20px 0 10px 0; font-weight: bold; width: 100%; text-align: center; }
-        
+        .floor-label { background: #212529; color: white; border-radius: 10px; padding: 6px 15px; display: inline-block; font-size: 0.75rem; margin: 15px 0 10px 0; font-weight: bold; width: 100%; text-align: center; }
+        .divider-container { display: flex; align-items: center; text-align: center; margin: 25px 0; font-weight: bold; }
+        .divider-container::before, .divider-container::after { content: ''; flex: 1; border-bottom: 2px solid #212529; }
+        .divider-text { margin: 0 15px; letter-spacing: 2px; text-transform: uppercase; font-size: 0.85rem; color: #212529; min-width: 120px; }
         .unit-pill { background: #fff; border: 1px solid #dee2e6; border-radius: 18px; padding: 18px 5px; text-align: center; font-weight: bold; font-size: 0.85rem; cursor: pointer; color: #212529; position: relative; }
         .unit-pill.state-yellow { border: 2px solid #ffc107; color: #856404; background: #fff3cd; }
         .unit-pill.state-red { border: 2px solid #dc3545; color: #dc3545; background: #fff5f5; }
-
-        .divider-container { display: flex; align-items: center; text-align: center; margin: 30px 0; font-weight: bold; }
-        .divider-container::before, .divider-container::after { content: ''; flex: 1; border-bottom: 2px solid #212529; }
-        .divider-text { margin: 0 15px; letter-spacing: 2px; text-transform: uppercase; font-size: 0.85rem; color: #212529; }
-        
         .profile-card { background: white; border-radius: 35px; padding: 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .profile-card.is-flagged { border: 3px solid #dc3545; background: #fff8f8; }
         .profile-card.is-warning { border: 3px solid #ffc107; background: #fffdf5; }
-        
         .profile-icon { background: #f8f9fa; width: 80px; height: 80px; line-height: 80px; border-radius: 50%; margin: 0 auto 20px; font-size: 2.2rem; color: #d62828; }
         .unit-display-number { font-size: 1.8rem; font-weight: 800; color: #212529; margin-bottom: 15px; }
         .unit-display-title { font-size: 0.75rem; text-transform: uppercase; color: #999; letter-spacing: 1px; margin-bottom: 2px; }
-        
         .btn-call { background-color: #28a745; color: white; border-radius: 50px; padding: 16px; font-size: 1.1rem; font-weight: bold; width: 100%; margin-top: 10px; text-decoration: none; display: inline-block; }
         .btn-whatsapp { background-color: #25D366; color: white; border-radius: 50px; padding: 16px; font-size: 1.1rem; font-weight: bold; width: 100%; margin-top: 10px; text-decoration: none; display: inline-block; }
         .btn-report { background-color: #f8f9fa; color: #dc3545; border: 2px solid #dc3545; border-radius: 50px; padding: 12px; font-size: 0.85rem; font-weight: bold; width: 100%; margin-top: 35px; cursor: pointer; }
-
         .card-nav-row { display: flex; gap: 15px; margin-top: 25px; padding-top: 10px; }
         .btn-nav-small { flex: 1; background-color: #343a40; color: white; border-radius: 50px; padding: 14px; font-size: 0.8rem; font-weight: bold; text-decoration: none; border: none; cursor: pointer; }
-        
         .history-section { background: white; border-radius: 30px; padding: 25px; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .history-item { border-left: 3px solid #eee; padding-left: 15px; margin-bottom: 15px; position: relative; }
         .history-item.reported { border-left-color: #dc3545; }
         .history-item.warning { border-left-color: #ffc107; }
         .history-item.resolved { border-left-color: #28a745; }
         .history-date { font-size: 0.7rem; color: #adb5bd; text-transform: uppercase; }
-
         #reportModal { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: white; z-index: 1000; border-radius: 30px 30px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.2); padding: 30px 20px; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .report-option-btn { width: 100%; border: 1px solid #dee2e6; background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 10px; text-align: left; font-weight: 600; display: flex; align-items: center; }
@@ -53,23 +46,20 @@
     </style>
 </head>
 <body>
-
     <div class="header-section">
         <div style="font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 10px; opacity: 0.9;">TF ERISTANA</div>
         <h1 style="font-weight: 800; margin: 0;" id="page-title">RESIDENT LIST</h1>
     </div>
-
     <div class="container overlap-container">
         <div id="block-selector">
             <div class="row g-3">
                 <div class="col-6"><div id="btnA" class="block-card active" onclick="loadBuildingGrid('A')"><i class="fas fa-building"></i><div class="fw-bold">BLOCK A</div></div></div>
                 <div class="col-6"><div id="btnB" class="block-card" onclick="loadBuildingGrid('B')"><i class="fas fa-city"></i><div class="fw-bold">BLOCK B</div></div></div>
             </div>
-            <div class="divider-container"><span class="divider-text" id="divider-label">BLOCK A</span></div>
+            <div class="divider-container"><span class="divider-text" id="dynamic-title">BLOCK A</span></div>
         </div>
         <div id="dynamic-content" class="row g-2"></div>
     </div>
-
     <div class="modal-overlay" id="modalOverlay" onclick="closeReportModal()"></div>
     <div id="reportModal">
         <h5 class="fw-bold mb-3 text-center">WHY IS THIS WRONG?</h5>
@@ -79,7 +69,6 @@
         <button class="report-option-btn" onclick="submitReport('Voicemail')"><i class="fas fa-microphone-alt-slash"></i> Voicemail</button>
         <button class="btn btn-light w-100 rounded-pill mt-2 fw-bold" onclick="closeReportModal()">CANCEL</button>
     </div>
-
     <script>
         const _URL = 'https://zfkcyhkpdijxepjkvowl.supabase.co'; 
         const _KEY = 'sb_publishable__w0R47jJvdnSJiE47E8KEQ_Z6nydqpd';
@@ -96,6 +85,7 @@
         function loadBuildingGrid(block) {
             currentBlock = block;
             document.getElementById('block-selector').style.display = 'block';
+            document.getElementById('dynamic-title').innerText = "BLOCK " + block;
             document.getElementById('btnA').className = (block === 'A') ? 'block-card active' : 'block-card';
             document.getElementById('btnB').className = (block === 'B') ? 'block-card active' : 'block-card';
             let count = (block === 'A') ? 11 : 10;
@@ -104,75 +94,58 @@
                 html += `<div class="col-4"><div class="building-tile" onclick="loadUnitList('${block}${i}')">${block}${i}</div></div>`;
             }
             document.getElementById('dynamic-content').innerHTML = html;
-            window.scrollTo(0, 0); // Scroll to top when block grid loads
+            window.scrollTo(0, 0);
         }
 
         async function loadUnitList(bid) {
             document.getElementById('block-selector').style.display = 'block'; 
+            document.getElementById('dynamic-title').innerText = "UNITS IN " + bid;
             const db = getDB();
-            
             const { data: residents } = await db.from('Residents').select('unit_number, is_flagged').ilike('unit_number', `${bid}-%`);
-            const { data: history } = await db.from('history').select('unit_number, action_type, created_at').ilike('unit_number', `${bid}-%`).order('created_at', { ascending: false });
-
+            const { data: history } = await db.from('history').select('unit_number, action_type').ilike('unit_number', `${bid}-%`);
             let unitsPerFloor = 4;
             if (['A1','A2','A3','A4','A5','A7'].includes(bid)) unitsPerFloor = 8;
             else if (['A9','A10','A11','B1'].includes(bid)) unitsPerFloor = 5;
             else if (['B2','B3','B4','B5','B6','B8','B9'].includes(bid)) unitsPerFloor = 6;
             else if (bid === 'B10') unitsPerFloor = 13;
-
             let html = '';
             ['G', '1', '2'].forEach(f => {
                 html += `<div class="col-12"><div class="floor-label">${f === 'G' ? 'GROUND FLOOR' : 'FLOOR ' + f}</div></div>`;
                 for (let u = 1; u <= unitsPerFloor; u++) {
                     let unitFull = `${bid}-${f}-${u < 10 ? '0' + u : u}`;
                     let resData = residents?.find(r => r.unit_number === unitFull);
-                    
-                    let unitHistory = history?.filter(h => h.unit_number === unitFull) || [];
-                    let lastResetIdx = unitHistory.findIndex(h => h.action_type === 'Status Reset');
-                    let currentVoicemails = unitHistory.slice(0, lastResetIdx === -1 ? unitHistory.length : lastResetIdx).filter(h => h.action_type === 'Reported: Voicemail');
-                    let vmCount = currentVoicemails.length;
-                    
+                    let vmCount = history?.filter(h => h.unit_number === unitFull && h.action_type === 'Reported: Voicemail').length || 0;
                     let stateClass = "";
                     if (resData?.is_flagged) stateClass = "state-red";
                     else if (vmCount > 0) stateClass = "state-yellow";
-
                     html += `<div class="col-6 mb-1"><div class="unit-pill ${stateClass}" onclick="loadContactProfile('${unitFull}', '${bid}')">${unitFull}</div></div>`;
                 }
             });
             html += `<div class="col-12 text-center mt-3"><button class="btn-nav-small px-4" style="flex:none; width:auto;" onclick="loadBuildingGrid('${currentBlock}')"><i class="fas fa-arrow-left"></i> BACK TO BUILDINGS</button></div>`;
             document.getElementById('dynamic-content').innerHTML = html;
-            window.scrollTo(0, 0); // Scroll to top when unit list loads
+            window.scrollTo(0, 0);
         }
 
         async function loadContactProfile(unitNumber, bid) {
             document.getElementById('block-selector').style.display = 'none';
             document.getElementById('dynamic-content').innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border text-danger"></div></div>';
-            
             const db = getDB();
             const { data: res } = await db.from('Residents').select('*').eq('unit_number', unitNumber).single();
             const { data: history } = await db.from('history').select('*').eq('unit_number', unitNumber).order('created_at', { ascending: false });
-
             let rawPhone = res.phone_number ? res.phone_number.toString().replace(/\D/g, '') : ''; 
             if (rawPhone.startsWith('0')) rawPhone = '6' + rawPhone;
-
-            let lastResetIdx = (history || []).findIndex(h => h.action_type === 'Status Reset');
-            let relevantHistory = lastResetIdx === -1 ? (history || []) : history.slice(0, lastResetIdx);
-            let vmCount = relevantHistory.filter(h => h.action_type === 'Reported: Voicemail').length;
-            
+            let vmCount = history?.filter(h => h.action_type === 'Reported: Voicemail').length || 0;
             let isWarning = vmCount > 0 && !res.is_flagged;
-
             let historyHtml = history && history.length > 0 ? history.map(h => `
-                <div class="history-item ${h.action_type === 'Status Reset' ? 'resolved' : (h.action_type.includes('Voicemail') ? 'warning' : (h.action_type.includes('Report') ? 'reported' : 'resolved'))}">
+                <div class="history-item ${h.action_type.includes('Voicemail') ? 'warning' : (h.action_type.includes('Report') ? 'reported' : 'resolved')}">
                     <div class="history-date">${new Date(h.created_at).toLocaleString()}</div>
                     <div class="fw-bold small">${h.action_type}</div>
                 </div>`).join('') : '<p class="text-muted small">No history recorded.</p>';
-
             document.getElementById('dynamic-content').innerHTML = `
                 <div class="col-12">
                     <div class="profile-card ${res.is_flagged ? 'is-flagged' : (isWarning ? 'is-warning' : '')}">
                         <div class="profile-icon"><i class="fas fa-user-circle"></i></div>
                         ${res.is_flagged ? '<div class="text-danger fw-bold mb-3"><i class="fas fa-exclamation-triangle"></i> WRONG NUMBER REPORTED</div>' : (isWarning ? `<div class="text-warning fw-bold mb-3"><i class="fas fa-clock"></i> VOICEMAIL (STRIKE ${vmCount})</div>` : '')}
-                        
                         <h4 class="fw-bold mb-1">${res.owner_name}</h4>
                         <p class="unit-display-title">Unit Number</p>
                         <h2 class="unit-display-number">${unitNumber}</h2>
@@ -181,11 +154,9 @@
                         <h3 class="fw-bold" style="color: #d62828;">${res.phone_number || 'No Phone'}</h3>
                         <a href="tel:${res.phone_number}" class="btn-call"><i class="fas fa-phone-alt me-2"></i> CALL NOW</a>
                         <a href="https://wa.me/${rawPhone}?text=Hello%20${res.owner_name},%20ini%20adalah%20Eristana%20Security." class="btn-whatsapp"><i class="fab fa-whatsapp me-2"></i> WHATSAPP TEXT</a>
-                        
                         <button class="btn-report" onclick="openReportModal('${unitNumber}', '${bid}', ${res.is_flagged})">
                             ${res.is_flagged ? 'RESOLVE / CORRECTED' : 'REPORT ISSUE'}
                         </button>
-
                         <div class="card-nav-row">
                             <button class="btn-nav-small" onclick="loadUnitList('${bid}')"><i class="fas fa-arrow-left"></i> BACK</button>
                             <button class="btn-nav-small" onclick="window.location.href='index.html'"><i class="fas fa-home"></i> HOME</button>
@@ -196,12 +167,12 @@
                         ${historyHtml}
                     </div>
                 </div>`;
-            window.scrollTo(0, 0); // Scroll to top when profile loads
+            window.scrollTo(0, 0);
         }
 
-        function openReportModal(unit, bid, currentlyFlagged) {
-            if (currentlyFlagged) {
-                if(confirm("Mark this issue as Resolved/Corrected?")) submitReport("Status Reset", true, unit, bid);
+        function openReportModal(unit, bid, isRed) {
+            if (isRed) {
+                if(confirm("Confirm: New number updated? This will clear all old strikes and logs.")) submitReport("RESOLVE", true, unit, bid);
                 return;
             }
             currentUnitReporting = unit; currentBidReporting = bid;
@@ -213,32 +184,25 @@
 
         async function submitReport(reason, isResolving = false, unit = currentUnitReporting, bid = currentBidReporting) {
             const db = getDB();
-            let actionType = isResolving ? "Status Reset" : "Reported: " + reason;
-            let forceFlag = false;
-
-            if (!isResolving && reason === "Voicemail") {
-                const { data: hist } = await db.from('history').select('action_type').eq('unit_number', unit).order('created_at', { ascending: false });
-                let lastResetIdx = (hist || []).findIndex(h => h.action_type === 'Status Reset');
-                let relevantHist = lastResetIdx === -1 ? (hist || []) : hist.slice(0, lastResetIdx);
-                let currentVMs = relevantHist.filter(h => h.action_type === 'Reported: Voicemail').length;
-                
-                if (currentVMs >= 2) forceFlag = true; 
-            } else if (!isResolving) {
-                forceFlag = true; 
-            }
-
             closeReportModal();
-            await db.from('history').insert([{ unit_number: unit, action_type: actionType }]);
-            
-            if (forceFlag) {
-                await db.from('Residents').update({ is_flagged: true }).eq('unit_number', unit);
-            } else if (isResolving) {
+            if (isResolving) {
                 await db.from('Residents').update({ is_flagged: false }).eq('unit_number', unit);
+                await db.from('history').delete().eq('unit_number', unit);
+                await db.from('history').insert([{ unit_number: unit, action_type: "Number Verified/Updated" }]);
+            } else {
+                let actionType = "Reported: " + reason;
+                let forceFlag = false;
+                if (reason === "Voicemail") {
+                    const { data: hist } = await db.from('history').select('action_type').eq('unit_number', unit);
+                    if ((hist?.filter(h => h.action_type === 'Reported: Voicemail').length || 0) >= 2) forceFlag = true; 
+                } else {
+                    forceFlag = true; 
+                }
+                await db.from('history').insert([{ unit_number: unit, action_type: actionType }]);
+                if (forceFlag) await db.from('Residents').update({ is_flagged: true }).eq('unit_number', unit);
             }
-            
             loadContactProfile(unit, bid);
         }
-
         window.onload = () => loadBuildingGrid('A');
     </script>
 </body>
