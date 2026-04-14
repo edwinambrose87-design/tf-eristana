@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body { background-color: #f2f2f2; font-family: sans-serif; padding-bottom: 80px; }
+        
+        .header-section {
+            background-color: #d62828; color: white; padding: 30px 20px 60px 20px;
+            border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
+            text-align: center; margin-bottom: -40px;
+        }
+
+        /* Blocks */
+        .block-card {
+            background: #e0e0e0; border-radius: 25px; padding: 20px;
+            text-align: center; cursor: pointer; transition: 0.3s; color: #888; border: none;
+        }
+        .block-card.active { background: white; color: black; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .block-card i { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+
+        /* Tiles */
+        .unit-tile {
+            background: white; border-radius: 25px; padding: 25px 10px;
+            text-align: center; font-weight: bold; font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 10px; cursor: pointer;
+        }
+
+        /* Divider */
+        .divider-container { display: flex; align-items: center; text-align: center; margin: 30px 0; font-weight: bold; }
+        .divider-container::before, .divider-container::after { content: ''; flex: 1; border-bottom: 2px solid black; }
+        .divider-text { margin: 0 15px; letter-spacing: 2px; }
+
+        /* Fixed Back Button Styles */
+        .back-nav-container {
+            background: white; border-radius: 50px; padding: 12px 30px;
+            display: inline-block; text-decoration: none; color: black;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <div style="font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 10px;">TF ERISTANA</div>
+        <h1 style="font-weight: 800; letter-spacing: 2px;" id="main-title">RESIDENT LIST</h1>
+    </div>
+
+    <div class="container" style="position: relative; z-index: 10;">
+        
+        <div id="selection-area">
+            <div class="row g-3">
+                <div class="col-6">
+                    <div id="btnA" class="block-card active" onclick="updateGrid('A')">
+                        <i class="fas fa-building"></i>
+                        <div class="fw-bold">BLOCK A</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div id="btnB" class="block-card" onclick="updateGrid('B')">
+                        <i class="fas fa-city"></i>
+                        <div class="fw-bold">BLOCK B</div>
+                    </div>
+                </div>
+            </div>
+            <div class="divider-container">
+                <span class="divider-text" id="current-label">BLOCK A</span>
+            </div>
+        </div>
+
+        <div class="row g-3" id="main-grid">
+            </div>
+
+        <div class="text-center mt-5">
+            <div id="back-button-logic">
+                <a href="index.html" class="back-nav-container">
+                    <i class="fas fa-undo"></i> BACK
+                    <div style="font-size: 0.6rem; opacity: 0.5;">RESIDENT LIST</div>
+                </a>
+            </div>
+            <div style="font-size: 0.7rem; margin-top: 20px; opacity: 0.5;">ERISTANA A & B • MANAGEMENT SYSTEM</div>
+        </div>
+    </div>
+
+    <script>
+        let currentBlock = 'A';
+
+        // 1. Show Buildings (A1, A2...)
+        function updateGrid(block) {
+            currentBlock = block;
+            document.getElementById('btnA').classList.toggle('active', block === 'A');
+            document.getElementById('btnB').classList.toggle('active', block === 'B');
+            document.getElementById('selection-area').style.display = 'block';
+            document.getElementById('current-label').innerText = 'BLOCK ' + block;
+            document.getElementById('main-title').innerText = 'RESIDENT LIST';
+
+            let count = (block === 'A') ? 11 : 10;
+            let html = '';
+            for (let i = 1; i <= count; i++) {
+                html += `<div class="col-4"><div class="unit-tile" onclick="showFloors('${block}${i}')">${block}${i}</div></div>`;
+            }
+            document.getElementById('main-grid').innerHTML = html;
+            
+            // Standard back button takes us to home
+            document.getElementById('back-button-logic').innerHTML = `
+                <a href="index.html" class="back-nav-container">
+                    <i class="fas fa-undo"></i> BACK
+                    <div style="font-size: 0.6rem; opacity: 0.5;">RESIDENT LIST</div>
+                </a>`;
+        }
+
+        // 2. Show Floors (G, 1, 2)
+        function showFloors(buildingID) {
+            document.getElementById('selection-area').style.display = 'none';
+            document.getElementById('main-title').innerText = buildingID;
+            
+            let html = `
+                <div class="col-12"><div class="unit-tile" onclick="showUnits('${buildingID}', 'G')">GROUND FLOOR</div></div>
+                <div class="col-12"><div class="unit-tile" onclick="showUnits('${buildingID}', '1')">FLOOR 1</div></div>
+                <div class="col-12"><div class="unit-tile" onclick="showUnits('${buildingID}', '2')">FLOOR 2</div></div>
+            `;
+            document.getElementById('main-grid').innerHTML = html;
+
+            // Back button now takes us back to the Building list
+            document.getElementById('back-button-logic').innerHTML = `
+                <div class="back-nav-container" style="cursor:pointer" onclick="updateGrid('${currentBlock}')">
+                    <i class="fas fa-arrow-left"></i> BACK
+                    <div style="font-size: 0.6rem; opacity: 0.5;">TO BLOCK ${currentBlock}</div>
+                </div>`;
+        }
+
+        // 3. Show Units (e.g., A5-2-01)
+        function showUnits(buildingID, floor) {
+            document.getElementById('main-title').innerText = buildingID + " - LVL " + floor;
+            let html = '';
+            for (let i = 1; i <= 4; i++) {
+                let unitNumber = buildingID + "-" + floor + "-0" + i;
+                html += `<div class="col-6"><div class="unit-tile" onclick="alert('Calling ${unitNumber}...')">${unitNumber}</div></div>`;
+            }
+            document.getElementById('main-grid').innerHTML = html;
+
+            // Back button now takes us back to the Floor list
+            document.getElementById('back-button-logic').innerHTML = `
+                <div class="back-nav-container" style="cursor:pointer" onclick="showFloors('${buildingID}')">
+                    <i class="fas fa-arrow-left"></i> BACK
+                    <div style="font-size: 0.6rem; opacity: 0.5;">TO FLOORS</div>
+                </div>`;
+        }
+
+        window.onload = () => updateGrid('A');
+    </script>
+</body>
+</html>
