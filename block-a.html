@@ -40,6 +40,8 @@
         #reportModal { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: white; z-index: 1000; border-radius: 30px 30px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.2); padding: 30px 20px; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .report-option-btn { width: 100%; border: 1px solid #dee2e6; background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 10px; text-align: left; font-weight: 600; }
+        .fetching-container { padding: 80px 20px; text-align: center; }
+        .fetching-text { font-weight: 800; font-size: 1.2rem; color: #d62828; margin-top: 20px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -77,6 +79,8 @@
         let currentUnitReporting = "";
         let currentBidReporting = "";
         let currentPhoneContext = "";
+        // THE ADMIN NUMBER FOR UPDATES
+        const ADMIN_MOBILE = "60163332124";
 
         function getDB() {
             if (!supabaseClient && window.supabase) supabaseClient = window.supabase.createClient(_URL, _KEY);
@@ -89,7 +93,6 @@
             document.getElementById('dynamic-title').innerText = "BLOCK " + block;
             document.getElementById('btnA').className = (block === 'A') ? 'block-card active' : 'block-card';
             document.getElementById('btnB').className = (block === 'B') ? 'block-card active' : 'block-card';
-            
             let html = '';
             let count = (block === 'A') ? 11 : 10;
             for (let i = 1; i <= count; i++) {
@@ -100,7 +103,6 @@
         }
 
         async function loadUnitList(bid) {
-            // FIX: Reset scroll and show loading state immediately to avoid flickers
             window.scrollTo(0, 0);
             document.getElementById('block-selector').style.display = 'block'; 
             document.getElementById('dynamic-title').innerText = "UNITS IN " + bid;
@@ -130,9 +132,13 @@
         }
 
         async function loadContactProfile(unitNumber, bid) {
-            // FIX: Immediately hide block selector when profile loads
             document.getElementById('block-selector').style.display = 'none';
-            document.getElementById('dynamic-content').innerHTML = '<div class="text-center py-5">Loading...</div>';
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="col-12 fetching-container">
+                    <div class="spinner-border text-danger" style="width: 3rem; height: 3rem;"></div>
+                    <div class="fetching-text">FETCHING RESIDENT INFORMATION...</div>
+                    <div class="small text-muted mt-2">Connecting to Secure Database</div>
+                </div>`;
             
             const db = getDB();
             const { data: res } = await db.from('Residents').select('*').eq('unit_number', unitNumber).single();
@@ -142,10 +148,11 @@
             let rawPhone = currentPhoneContext.toString().replace(/\D/g, ''); 
             if (rawPhone.startsWith('0')) rawPhone = '6' + rawPhone;
 
+            const waMessage = encodeURIComponent(`Hi ${res.owner_name}, this is Eristana Security Guardhouse.`);
+
             let lastUpdateIdx = (history || []).findIndex(h => h.action_type.includes('Updated'));
             let relevantHistory = lastUpdateIdx === -1 ? (history || []) : history.slice(0, lastUpdateIdx);
             let vmCount = relevantHistory.filter(h => h.action_type.includes('Voicemail')).length;
-            
             let isWarning = vmCount > 0 && !res.is_flagged;
 
             let historyHtml = history?.map(h => {
@@ -158,7 +165,7 @@
                 <div class="history-item ${h.action_type.includes('Updated') ? 'resolved' : (h.action_type.includes('Voicemail') ? 'warning' : 'reported')}">
                     <div class="history-date">${formattedDate}</div>
                     <div class="small fw-bold">${h.action_type}</div>
-                </div>`}).join('') || '<p class="text-muted small">No history.</p>';
+                </div>`}).join('') || '<p class="text-muted small">No history recorded.</p>';
 
             document.getElementById('dynamic-content').innerHTML = `
                 <div class="col-12">
@@ -173,7 +180,7 @@
                         <h3 class="fw-bold mb-4" style="color:#d62828;">${res.phone_number}</h3>
                         
                         <a href="tel:${res.phone_number}" class="btn-call btn-comm ${res.is_flagged ? 'locked' : ''}">CALL NOW</a>
-                        <a href="https://wa.me/${rawPhone}" class="btn-whatsapp btn-comm ${res.is_flagged ? 'locked' : ''}" style="margin-top:10px;">WHATSAPP TEXT</a>
+                        <a href="https://wa.me/${rawPhone}?text=${waMessage}" class="btn-whatsapp btn-comm ${res.is_flagged ? 'locked' : ''}" style="margin-top:10px;">WHATSAPP</a>
                         
                         <button class="btn-report" id="reportBtn" ${res.is_flagged ? 'disabled' : ''} onclick="openReportModal('${unitNumber}', '${bid}', false)">REPORT ISSUE</button>
 
@@ -204,16 +211,24 @@
             const db = getDB();
             closeReportModal();
             let actionText = isResolving ? `Number Updated to: ${currentPhoneContext}` : `Reported: ${reason} (Number: ${currentPhoneContext})`;
-            if (isResolving) await db.from('Residents').update({ is_flagged: false }).eq('unit_number', unit);
-            else {
+            
+            if (isResolving) {
+                await db.from('Residents').update({ is_flagged: false }).eq('unit_number', unit);
+            } else {
                 let forceFlag = false;
                 if (reason === "Voicemail") {
                     const { data: hist } = await db.from('history').select('action_type').eq('unit_number', unit).order('created_at', { ascending: false });
                     let lastIdx = hist.findIndex(h => h.action_type.includes('Updated'));
                     if (hist.slice(0, lastIdx === -1 ? hist.length : lastIdx).filter(h => h.action_type.includes('Voicemail')).length >= 2) forceFlag = true;
                 } else forceFlag = true;
+                
                 if (forceFlag) await db.from('Residents').update({ is_flagged: true }).eq('unit_number', unit);
+
+                // SEND WHATSAPP TO ADMIN
+                const adminMsg = encodeURIComponent(`🚨 ALERT: Unit ${unit} reported for ${reason}. Current Number: ${currentPhoneContext}`);
+                window.open(`https://wa.me/${ADMIN_MOBILE}?text=${adminMsg}`, '_blank');
             }
+            
             await db.from('history').insert([{ unit_number: unit, action_type: actionText }]);
             loadContactProfile(unit, bid);
         }
