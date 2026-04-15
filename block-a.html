@@ -9,7 +9,7 @@
     <script src="supabase.js"></script>
     <style>
         body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; padding-bottom: 100px; overflow-x: hidden; }
-        .header-section { background-color: #d62828; color: white; padding: 40px 20px 80px 20px; text-align: center; }
+        .header-section { background-color: #d62828; color: white; padding: 50px 20px 80px 20px; text-align: center; }
         .overlap-container { margin-top: -60px; position: relative; z-index: 10; }
         .block-card { background: #e9ecef; border-radius: 25px; padding: 25px 15px; text-align: center; cursor: pointer; color: #adb5bd; border: none; transition: 0.2s; }
         .block-card.active { background: white; color: black; box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
@@ -22,8 +22,9 @@
         .unit-pill { background: #fff; border: 1px solid #dee2e6; border-radius: 18px; padding: 18px 5px; text-align: center; font-weight: bold; font-size: 0.85rem; cursor: pointer; color: #212529; position: relative; }
         .unit-pill.state-yellow { border: 2px solid #ffc107; color: #856404; background: #fff3cd; }
         .unit-pill.state-red { border: 2px solid #dc3545; color: #dc3545; background: #fff5f5; }
-        .profile-card { background: white; border-radius: 35px; padding: 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .profile-card.is-flagged { border: 3px solid #dc3545; background: #fff8f8; }
+        .profile-card { background: white; border-radius: 35px; padding: 40px 20px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.1); margin-bottom: 20px; border: 3px solid transparent; }
+        .profile-card.is-flagged { border-color: #dc3545; background: #fff8f8; }
+        .profile-card.is-warning { border-color: #ffc107; background: #fffdf5; }
         .btn-call { background-color: #28a745; color: white; border-radius: 50px; padding: 16px; font-size: 1.1rem; font-weight: bold; width: 100%; margin-top: 10px; text-decoration: none; display: inline-block; }
         .btn-whatsapp { background-color: #25D366; color: white; border-radius: 50px; padding: 16px; font-size: 1.1rem; font-weight: bold; width: 100%; margin-top: 10px; text-decoration: none; display: inline-block; }
         .btn-report { background-color: #f8f9fa; color: #dc3545; border: 2px solid #dc3545; border-radius: 50px; padding: 12px; font-size: 0.85rem; font-weight: bold; width: 100%; margin-top: 35px; cursor: pointer; }
@@ -33,10 +34,6 @@
         .btn-nav-small { flex: 1; background-color: #343a40; color: white; border-radius: 50px; padding: 14px; font-size: 0.8rem; font-weight: bold; text-decoration: none; border: none; cursor: pointer; }
         .history-section { background: white; border-radius: 30px; padding: 25px; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .history-item { border-left: 3px solid #eee; padding-left: 15px; margin-bottom: 15px; position: relative; }
-        .history-item.warning { border-left-color: #ffc107; }
-        .history-item.reported { border-left-color: #dc3545; }
-        .history-item.resolved { border-left-color: #28a745; }
-        .history-date { font-size: 0.7rem; color: #adb5bd; text-transform: uppercase; }
         #reportModal { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: white; z-index: 1000; border-radius: 30px 30px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.2); padding: 30px 20px; }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
         .report-option-btn { width: 100%; border: 1px solid #dee2e6; background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 10px; text-align: left; font-weight: 600; }
@@ -79,7 +76,6 @@
         let currentUnitReporting = "";
         let currentBidReporting = "";
         let currentPhoneContext = "";
-        // THE ADMIN NUMBER FOR UPDATES
         const ADMIN_MOBILE = "60163332124";
 
         function getDB() {
@@ -147,12 +143,13 @@
             currentPhoneContext = res.phone_number || "N/A";
             let rawPhone = currentPhoneContext.toString().replace(/\D/g, ''); 
             if (rawPhone.startsWith('0')) rawPhone = '6' + rawPhone;
-
             const waMessage = encodeURIComponent(`Hi ${res.owner_name}, this is Eristana Security Guardhouse.`);
 
             let lastUpdateIdx = (history || []).findIndex(h => h.action_type.includes('Updated'));
             let relevantHistory = lastUpdateIdx === -1 ? (history || []) : history.slice(0, lastUpdateIdx);
             let vmCount = relevantHistory.filter(h => h.action_type.includes('Voicemail')).length;
+            
+            // LOGIC FOR BORDER COLORS
             let isWarning = vmCount > 0 && !res.is_flagged;
 
             let historyHtml = history?.map(h => {
@@ -163,7 +160,7 @@
                 }).replace(',', '');
                 return `
                 <div class="history-item ${h.action_type.includes('Updated') ? 'resolved' : (h.action_type.includes('Voicemail') ? 'warning' : 'reported')}">
-                    <div class="history-date">${formattedDate}</div>
+                    <div class="history-date" style="font-size: 0.7rem; color: #adb5bd;">${formattedDate}</div>
                     <div class="small fw-bold">${h.action_type}</div>
                 </div>`}).join('') || '<p class="text-muted small">No history recorded.</p>';
 
@@ -219,14 +216,16 @@
                 if (reason === "Voicemail") {
                     const { data: hist } = await db.from('history').select('action_type').eq('unit_number', unit).order('created_at', { ascending: false });
                     let lastIdx = hist.findIndex(h => h.action_type.includes('Updated'));
-                    if (hist.slice(0, lastIdx === -1 ? hist.length : lastIdx).filter(h => h.action_type.includes('Voicemail')).length >= 2) forceFlag = true;
+                    let vmCount = hist.slice(0, lastIdx === -1 ? hist.length : lastIdx).filter(h => h.action_type.includes('Voicemail')).length;
+                    if (vmCount >= 2) forceFlag = true;
                 } else forceFlag = true;
                 
                 if (forceFlag) await db.from('Residents').update({ is_flagged: true }).eq('unit_number', unit);
 
-                // SEND WHATSAPP TO ADMIN
-                const adminMsg = encodeURIComponent(`🚨 ALERT: Unit ${unit} reported for ${reason}. Current Number: ${currentPhoneContext}`);
-                window.open(`https://wa.me/${ADMIN_MOBILE}?text=${adminMsg}`, '_blank');
+                if (reason !== "Voicemail" || forceFlag) {
+                    const adminMsg = encodeURIComponent(`🚨 ALERT: Unit ${unit} reported for ${reason}${forceFlag && reason === "Voicemail" ? " (STRIKE 3)" : ""}. Number: ${currentPhoneContext}`);
+                    window.open(`https://wa.me/${ADMIN_MOBILE}?text=${adminMsg}`, '_blank');
+                }
             }
             
             await db.from('history').insert([{ unit_number: unit, action_type: actionText }]);
