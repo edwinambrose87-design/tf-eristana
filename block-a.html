@@ -108,10 +108,21 @@
             const { data: residents } = await db.from('Residents').select('unit_number, is_flagged').ilike('unit_number', `${bid}-%`);
             const { data: history } = await db.from('history').select('unit_number, action_type, created_at').ilike('unit_number', `${bid}-%`).order('created_at', { ascending: false });
 
+            // RESTORED: PRECISE UNIT COUNTS PER BUILDING
+            let units = 4; 
+            if (['A1','A2','A3','A4','A5','A7'].includes(bid)) {
+                units = 8;
+            } else if (['A9','A10','A11','B1'].includes(bid)) {
+                units = 5;
+            } else if (['B2','B3','B4','B5','B6','B8','B9'].includes(bid)) {
+                units = 6;
+            } else if (bid === 'B10') {
+                units = 13;
+            }
+
             let html = '';
             ['G', '1', '2'].forEach(f => {
                 html += `<div class="col-12"><div class="floor-label">${f === 'G' ? 'GROUND FLOOR' : 'FLOOR ' + f}</div></div>`;
-                let units = (bid === 'B10') ? 13 : (['A1','A2','A3','A4','A5','A7'].includes(bid) ? 8 : 4);
                 for (let u = 1; u <= units; u++) {
                     let unitFull = `${bid}-${f}-${u < 10 ? '0' + u : u}`;
                     let resData = residents?.find(r => r.unit_number === unitFull);
@@ -148,8 +159,6 @@
             let lastUpdateIdx = (history || []).findIndex(h => h.action_type.includes('Updated'));
             let relevantHistory = lastUpdateIdx === -1 ? (history || []) : history.slice(0, lastUpdateIdx);
             let vmCount = relevantHistory.filter(h => h.action_type.includes('Voicemail')).length;
-            
-            // LOGIC FOR BORDER COLORS
             let isWarning = vmCount > 0 && !res.is_flagged;
 
             let historyHtml = history?.map(h => {
@@ -193,7 +202,7 @@
         function openReportModal(unit, bid, isResolving) {
             if (isResolving) {
                 const pw = prompt("Enter Administration Password to Resolve:");
-                if (pw === "870521565349") submitReport("Number Updated", true, unit, bid);
+                if (pw === "870521 565349") submitReport("Number Updated", true, unit, bid);
                 else if (pw !== null) alert("Incorrect Password.");
                 return;
             }
@@ -215,7 +224,7 @@
                 let forceFlag = false;
                 if (reason === "Voicemail") {
                     const { data: hist } = await db.from('history').select('action_type').eq('unit_number', unit).order('created_at', { ascending: false });
-                    let lastIdx = hist.findIndex(h => h.action_type.includes('Updated'));
+                    let lastIdx = (hist || []).findIndex(h => h.action_type.includes('Updated'));
                     let vmCount = hist.slice(0, lastIdx === -1 ? hist.length : lastIdx).filter(h => h.action_type.includes('Voicemail')).length;
                     if (vmCount >= 2) forceFlag = true;
                 } else forceFlag = true;
